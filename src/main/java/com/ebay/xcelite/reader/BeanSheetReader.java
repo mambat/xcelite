@@ -18,6 +18,7 @@ package com.ebay.xcelite.reader;
 import com.ebay.xcelite.annotate.NoConverterClass;
 import com.ebay.xcelite.annotations.AnyColumn;
 import com.ebay.xcelite.column.Col;
+import com.ebay.xcelite.column.ColumnFieldsMapper;
 import com.ebay.xcelite.column.ColumnsExtractor;
 import com.ebay.xcelite.column.ColumnsMapper;
 import com.ebay.xcelite.converters.ColumnValueConverter;
@@ -47,6 +48,7 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
     private final Col anyColumn;
     private final Field anyColumnField;
     private final ColumnsMapper mapper;
+    private final ColumnFieldsMapper fieldsMapper;
     private final Class<T> type;
     private LinkedHashSet<String> header;
     private Iterator<Row> rowIterator;
@@ -57,10 +59,14 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
         this.type = type;
         ColumnsExtractor extractor = new ColumnsExtractor(type);
         extractor.extract();
+
         columns = extractor.getColumns();
+        mapper = new ColumnsMapper(columns);
+
+        fieldsMapper = new ColumnFieldsMapper(extractor.getColumnFields());
+
         anyColumn = extractor.getAnyColumn();
         anyColumnField = extractor.getAnyColumnField();
-        mapper = new ColumnsMapper(columns);
 
         AnyColumn anyColumnAnno = anyColumnField.getAnnotation(AnyColumn.class);
         ignoreCols = Sets.newHashSet(anyColumnAnno.ignoreCols());
@@ -82,14 +88,11 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
                     Cell cell = row.getCell(i, Row.RETURN_BLANK_AS_NULL);
                     Col col = mapper.getColumn(columnName);
                     if (col == null) {
-                        if (anyColumn != null) {
-                            if (!isColumnInIgnoreList(columnName)) {
-                                writeToAnyColumnField(object, cell, columnName);
-                            }
+                        if (anyColumn != null && !isColumnInIgnoreList(columnName)) {
+                            writeToAnyColumnField(object, cell, columnName);
                         }
                     } else {
-                        Set<Field> fields = ReflectionUtils.getAllFields(object.getClass(), withName(col.getFieldName()));
-                        Field field = fields.iterator().next();
+                        Field field = fieldsMapper.getColumnField(col.getFieldName());
                         writeToField(field, object, cell, col);
                     }
                     i++;

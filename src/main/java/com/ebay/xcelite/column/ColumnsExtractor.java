@@ -36,6 +36,7 @@ public class ColumnsExtractor {
 
     private final Class<?> type;
     private Set<Col> columns;
+    private Set<Field> columnFields;
     private Col anyColumn;
     private Field anyColumnField;
     private Set<Col> colsOrdering;
@@ -57,7 +58,7 @@ public class ColumnsExtractor {
 
     @SuppressWarnings("unchecked")
     public void extract() {
-        Set<Field> columnFields = ReflectionUtils.getAllFields(type, withAnnotation(Column.class));
+        columnFields = ReflectionUtils.getAllFields(type, withAnnotation(Column.class));
         for (Field columnField : columnFields) {
             Column annotation = columnField.getAnnotation(Column.class);
             Col col = null;
@@ -98,7 +99,7 @@ public class ColumnsExtractor {
             throw new XceliteException("Multiple AnyColumn fields are not allowed");
         }
 
-        Field anyColumnField = anyColumnFields.iterator().next();
+        anyColumnField = anyColumnFields.iterator().next();
         if (!anyColumnField.getType().isAssignableFrom(Map.class)) {
             throw new XceliteException("AnyColumn field " + anyColumnField.getName()
                     + " should be of type Map.class or assignable from Map.class");
@@ -145,5 +146,9 @@ public class ColumnsExtractor {
 
     public Field getAnyColumnField() {
         return anyColumnField;
+    }
+
+    public Set<Field> getColumnFields() {
+        return columnFields;
     }
 }
