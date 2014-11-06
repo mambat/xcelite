@@ -29,12 +29,9 @@ import com.google.common.collect.Sets;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
-import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
-
-import static org.reflections.ReflectionUtils.withName;
 
 /**
  * Class description...
@@ -97,11 +94,13 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
                     }
                     i++;
                 }
+
                 boolean keepObject = true;
                 for (RowPostProcessor<T> rowPostProcessor : rowPostProcessors) {
                     keepObject = rowPostProcessor.process(object);
                     if (!keepObject) break;
                 }
+
                 if (keepObject) {
                     data.add(object);
                 }
@@ -123,20 +122,21 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
         try {
             anyColumnField.setAccessible(true);
             Object value = readValueFromCell(cell);
-            if (value != null) {
-                AnyColumn annotation = anyColumnField.getAnnotation(AnyColumn.class);
-                if (anyColumnField.get(object) == null) {
-                    Map<String, Object> map = (Map<String, Object>) annotation.as().newInstance();
-                    anyColumnField.set(object, map);
-                }
-                Map<String, Object> map = (Map<String, Object>) anyColumnField.get(object);
-                if (annotation.converter() != NoConverterClass.class) {
-                    ColumnValueConverter<Object, ?> converter = (ColumnValueConverter<Object, ?>) annotation.converter()
-                            .newInstance();
-                    value = converter.deserialize(value);
-                }
-                map.put(columnName, value);
+            if (value == null) return;
+
+            AnyColumn annotation = anyColumnField.getAnnotation(AnyColumn.class);
+            if (anyColumnField.get(object) == null) {
+                Map<String, Object> map = (Map<String, Object>) annotation.as().newInstance();
+                anyColumnField.set(object, map);
             }
+
+            Map<String, Object> map = (Map<String, Object>) anyColumnField.get(object);
+            if (annotation.converter() != NoConverterClass.class) {
+                ColumnValueConverter<Object, ?> converter = (ColumnValueConverter<Object, ?>) annotation.converter()
+                        .newInstance();
+                value = converter.deserialize(value);
+            }
+            map.put(columnName, value);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
