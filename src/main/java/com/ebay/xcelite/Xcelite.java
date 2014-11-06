@@ -19,11 +19,9 @@ import com.ebay.xcelite.exceptions.XceliteException;
 import com.ebay.xcelite.sheet.XceliteSheet;
 import com.ebay.xcelite.sheet.XceliteSheetImpl;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 
@@ -35,7 +33,7 @@ import java.io.*;
  */
 public class Xcelite {
 
-    private Workbook workbook;
+    private final Workbook workbook;
     private File file;
 
     public Xcelite() {
@@ -87,7 +85,7 @@ public class Xcelite {
     /**
      * Gets the sheet with the specified index.
      *
-     * @param sheetIndex the sheet name
+     * @param sheetName the sheet name
      * @return XceliteSheet object
      */
     public XceliteSheet getSheet(String sheetName) {

@@ -90,23 +90,25 @@ public class ColumnsExtractor {
     @SuppressWarnings("unchecked")
     private void extractAnyColumn() {
         Set<Field> anyColumnFields = ReflectionUtils.getAllFields(type, withAnnotation(AnyColumn.class));
-        if (anyColumnFields.size() > 0) {
-            if (anyColumnFields.size() > 1) {
-                throw new XceliteException("Multiple AnyColumn fields are not allowed");
-            }
-            Field anyColumnField = anyColumnFields.iterator().next();
-            if (!anyColumnField.getType().isAssignableFrom(Map.class)) {
-                throw new XceliteException(
-                        String.format("AnyColumn field \"%s\" should be of type Map.class or assignable from Map.class",
-                                anyColumnField.getName()));
-            }
-            anyColumn = new Col(anyColumnField.getName(), anyColumnField.getName());
-            anyColumn.setAnyColumn(true);
-            AnyColumn annotation = anyColumnField.getAnnotation(AnyColumn.class);
-            anyColumn.setType(annotation.as());
-            if (annotation.converter() != NoConverterClass.class) {
-                anyColumn.setConverter(annotation.converter());
-            }
+
+        if (anyColumnFields.size() <= 0) return;
+
+        if (anyColumnFields.size() > 1) {
+            throw new XceliteException("Multiple AnyColumn fields are not allowed");
+        }
+
+        Field anyColumnField = anyColumnFields.iterator().next();
+        if (!anyColumnField.getType().isAssignableFrom(Map.class)) {
+            throw new XceliteException("AnyColumn field " + anyColumnField.getName()
+                    + " should be of type Map.class or assignable from Map.class");
+        }
+
+        anyColumn = new Col(anyColumnField.getName(), anyColumnField.getName());
+        anyColumn.setAnyColumn(true);
+        AnyColumn annotation = anyColumnField.getAnnotation(AnyColumn.class);
+        anyColumn.setType(annotation.as());
+        if (annotation.converter() != NoConverterClass.class) {
+            anyColumn.setConverter(annotation.converter());
         }
     }
 
@@ -122,12 +124,12 @@ public class ColumnsExtractor {
                 Col column = map.get(col.getName());
                 column.copyTo(col);
             } else {
-                throw new RuntimeException(String.format("Unrecognized column \"%s\" in Row columns ordering", col.getName()));
+                throw new RuntimeException("Unrecognized column " + col.getName() + " in Row columns ordering");
             }
         }
 
         if (colsOrdering.size() != columns.size()) {
-            throw new RuntimeException(String.format("Not all columns are specified in Row columns ordering"));
+            throw new RuntimeException("Not all columns are specified in Row columns ordering");
         }
         columns = colsOrdering;
     }

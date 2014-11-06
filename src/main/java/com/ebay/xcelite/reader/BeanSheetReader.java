@@ -99,24 +99,12 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
                     data.add(object);
                 }
             }
-        } catch (InstantiationException e1) {
-            throw new RuntimeException(e1);
-        } catch (IllegalAccessException e1) {
-            throw new RuntimeException(e1);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
         return data;
-    }
-
-    private boolean isBlankRow(Row row) {
-        Iterator<Cell> cellIterator = row.cellIterator();
-        boolean blankRow = true;
-        while (cellIterator.hasNext()) {
-            Object value = readValueFromCell(cellIterator.next());
-            if (blankRow && value != null && !String.valueOf(value).isEmpty()) {
-                blankRow = false;
-            }
-        }
-        return blankRow;
     }
 
     private boolean isColumnInIgnoreList(Field anyColumnField, String columnName) {

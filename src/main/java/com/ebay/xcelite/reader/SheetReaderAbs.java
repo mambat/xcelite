@@ -18,7 +18,9 @@ package com.ebay.xcelite.reader;
 import com.ebay.xcelite.sheet.XceliteSheet;
 import com.google.common.collect.Lists;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,6 +39,17 @@ public abstract class SheetReaderAbs<T> implements SheetReader<T> {
         this.sheet = sheet;
         this.skipHeader = skipHeader;
         rowPostProcessors = Lists.newArrayList();
+    }
+
+    protected boolean isBlankRow(Row row) {
+        Iterator<Cell> cellIterator = row.cellIterator();
+        while (cellIterator.hasNext()) {
+            Object value = readValueFromCell(cellIterator.next());
+
+            if (value != null && !String.valueOf(value).isEmpty())
+                return false;
+        }
+        return true;
     }
 
     protected Object readValueFromCell(Cell cell) {
