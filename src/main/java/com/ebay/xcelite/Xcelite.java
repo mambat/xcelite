@@ -19,8 +19,10 @@ import com.ebay.xcelite.exceptions.XceliteException;
 import com.ebay.xcelite.sheet.XceliteSheet;
 import com.ebay.xcelite.sheet.XceliteSheetImpl;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
@@ -33,7 +35,7 @@ import java.io.*;
  */
 public class Xcelite {
 
-    private final Workbook workbook;
+    private Workbook workbook;
     private File file;
 
     public Xcelite() {
@@ -43,10 +45,8 @@ public class Xcelite {
     public Xcelite(File file) {
         try {
             this.file = file;
-            workbook = new XSSFWorkbook(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+            workbook = new WorkbookFactory().create(file);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
