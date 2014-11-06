@@ -37,6 +37,7 @@ public class ColumnsExtractor {
     private final Class<?> type;
     private Set<Col> columns;
     private Col anyColumn;
+    private Field anyColumnField;
     private Set<Col> colsOrdering;
 
     public ColumnsExtractor(Class<?> type) {
@@ -140,5 +141,9 @@ public class ColumnsExtractor {
 
     public Col getAnyColumn() {
         return anyColumn;
+    }
+
+    public Field getAnyColumnField() {
+        return anyColumnField;
     }
 }

@@ -45,10 +45,12 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
 
     private final LinkedHashSet<Col> columns;
     private final Col anyColumn;
+    private final Field anyColumnField;
     private final ColumnsMapper mapper;
     private final Class<T> type;
     private LinkedHashSet<String> header;
     private Iterator<Row> rowIterator;
+    private Set<String> ignoreCols;
 
     public BeanSheetReader(XceliteSheet sheet, Class<T> type) {
         super(sheet, false);
@@ -57,7 +59,11 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
         extractor.extract();
         columns = extractor.getColumns();
         anyColumn = extractor.getAnyColumn();
+        anyColumnField = extractor.getAnyColumnField();
         mapper = new ColumnsMapper(columns);
+
+        AnyColumn anyColumnAnno = anyColumnField.getAnnotation(AnyColumn.class);
+        ignoreCols = Sets.newHashSet(anyColumnAnno.ignoreCols());
     }
 
     @SuppressWarnings("unchecked")
@@ -77,10 +83,8 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
                     Col col = mapper.getColumn(columnName);
                     if (col == null) {
                         if (anyColumn != null) {
-                            Set<Field> fields = ReflectionUtils.getAllFields(object.getClass(), withName(anyColumn.getFieldName()));
-                            Field field = fields.iterator().next();
-                            if (!isColumnInIgnoreList(field, columnName)) {
-                                writeToAnyColumnField(field, object, cell, columnName);
+                            if (!isColumnInIgnoreList(columnName)) {
+                                writeToAnyColumnField(object, cell, columnName);
                             }
                         }
                     } else {
@@ -107,24 +111,22 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
         return data;
     }
 
-    private boolean isColumnInIgnoreList(Field anyColumnField, String columnName) {
-        AnyColumn annotation = anyColumnField.getAnnotation(AnyColumn.class);
-        Set<String> ignoreCols = Sets.newHashSet(annotation.ignoreCols());
+    private boolean isColumnInIgnoreList(String columnName) {
         return ignoreCols.contains(columnName);
     }
 
     @SuppressWarnings("unchecked")
-    private void writeToAnyColumnField(Field field, T object, Cell cell, String columnName) {
+    private void writeToAnyColumnField(T object, Cell cell, String columnName) {
         try {
-            field.setAccessible(true);
+            anyColumnField.setAccessible(true);
             Object value = readValueFromCell(cell);
             if (value != null) {
-                AnyColumn annotation = field.getAnnotation(AnyColumn.class);
-                if (field.get(object) == null) {
+                AnyColumn annotation = anyColumnField.getAnnotation(AnyColumn.class);
+                if (anyColumnField.get(object) == null) {
                     Map<String, Object> map = (Map<String, Object>) annotation.as().newInstance();
-                    field.set(object, map);
+                    anyColumnField.set(object, map);
                 }
-                Map<String, Object> map = (Map<String, Object>) field.get(object);
+                Map<String, Object> map = (Map<String, Object>) anyColumnField.get(object);
                 if (annotation.converter() != NoConverterClass.class) {
                     ColumnValueConverter<Object, ?> converter = (ColumnValueConverter<Object, ?>) annotation.converter()
                             .newInstance();
