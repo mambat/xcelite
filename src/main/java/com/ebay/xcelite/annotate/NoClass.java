@@ -20,8 +20,8 @@ package com.ebay.xcelite.annotate;
  *
  * @author kharel (kharel@ebay.com)
  * @creation_date Aug 29, 2013
- * 
  */
 public final class NoClass {
-  private NoClass() { }
+    private NoClass() {
+    }
 }

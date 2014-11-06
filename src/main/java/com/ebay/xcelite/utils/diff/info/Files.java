@@ -20,23 +20,22 @@ package com.ebay.xcelite.utils.diff.info;
  *
  * @author kharel (kharel@ebay.com)
  * @creation_date Nov 21, 2013
- * 
  */
 public class Files {
 
-  private final String aFile;
-  private final String bFile;
+    private final String aFile;
+    private final String bFile;
 
-  public Files(String aFile, String bFile) {
-    this.aFile = aFile;
-    this.bFile = bFile;
-  }
+    public Files(String aFile, String bFile) {
+        this.aFile = aFile;
+        this.bFile = bFile;
+    }
 
-  public String aFile() {
-    return aFile;
-  }
+    public String aFile() {
+        return aFile;
+    }
 
-  public String bFile() {
-    return bFile;
-  }  
+    public String bFile() {
+        return bFile;
+    }
 }

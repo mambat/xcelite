@@ -25,32 +25,31 @@ import com.ebay.xcelite.utils.diff.info.Sheets;
  *
  * @author kharel (kharel@ebay.com)
  * @creation_date Nov 21, 2013
- * 
  */
 public class ReportInfo<T> implements Info<T> {
 
-  private final Files files;
-  private final Sheets sheets;
-  private final Collections<T> collections;   
-  
-  public ReportInfo(Files files, Sheets sheets, Collections<T> collections) {
-    this.files = files;
-    this.sheets = sheets;
-    this.collections = collections;
-  }
+    private final Files files;
+    private final Sheets sheets;
+    private final Collections<T> collections;
 
-  @Override
-  public Files files() {
-    return files;
-  } 
+    public ReportInfo(Files files, Sheets sheets, Collections<T> collections) {
+        this.files = files;
+        this.sheets = sheets;
+        this.collections = collections;
+    }
 
-  @Override
-  public Sheets sheets() {
-    return sheets;
-  }
+    @Override
+    public Files files() {
+        return files;
+    }
 
-  @Override
-  public Collections<T> collections() {
-    return collections;
-  }
+    @Override
+    public Sheets sheets() {
+        return sheets;
+    }
+
+    @Override
+    public Collections<T> collections() {
+        return collections;
+    }
 }
