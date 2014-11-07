@@ -65,8 +65,10 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
         anyColumn = extractor.getAnyColumn();
         anyColumnField = extractor.getAnyColumnField();
 
-        AnyColumn anyColumnAnno = anyColumnField.getAnnotation(AnyColumn.class);
-        ignoreCols = Sets.newHashSet(anyColumnAnno.ignoreCols());
+        if (anyColumnField != null) {
+            AnyColumn anyColumnAnno = anyColumnField.getAnnotation(AnyColumn.class);
+            ignoreCols = Sets.newHashSet(anyColumnAnno.ignoreCols());
+        }
     }
 
     @SuppressWarnings("unchecked")
