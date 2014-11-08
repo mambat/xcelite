@@ -122,8 +122,7 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
     @SuppressWarnings("unchecked")
     private void writeToAnyColumnField(T object, Cell cell, String columnName) {
         try {
-            anyColumnField.setAccessible(true);
-            Object value = readValueFromCell(cell);
+            Object value = readValueFromCell(cell, String.class);
             if (value == null) return;
 
             AnyColumn annotation = anyColumnField.getAnnotation(AnyColumn.class);
@@ -151,7 +150,7 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
     @SuppressWarnings("unchecked")
     private void writeToField(Field field, T object, Cell cell, Col column) {
         try {
-            Object cellValue = readValueFromCell(cell);
+            Object cellValue = readValueFromCell(cell, column.getType());
             if (cellValue != null) {
                 if (column.getConverter() != null) {
                     ColumnValueConverter<Object, ?> converter = (ColumnValueConverter<Object, ?>) column.getConverter()
@@ -161,7 +160,6 @@ public class BeanSheetReader<T> extends SheetReaderAbs<T> {
                     cellValue = convertToFieldType(cellValue, field.getType());
                 }
             }
-            field.setAccessible(true);
             field.set(object, cellValue);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

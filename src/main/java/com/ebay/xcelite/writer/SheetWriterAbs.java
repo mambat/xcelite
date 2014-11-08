@@ -20,6 +20,8 @@ import org.apache.poi.ss.usermodel.Cell;
 
 import java.util.Date;
 
+import static com.ebay.xcelite.column.ColumnsIdentifier.*;
+
 /**
  * Class description...
  *
@@ -41,13 +43,11 @@ public abstract class SheetWriterAbs<T> implements SheetWriter<T> {
         if (dataType != null) {
             type = dataType;
         }
-        if (type == Date.class) {
+        if (isDateByFieldType(type)) {
             cell.setCellValue((Date) fieldValueObj);
-        } else if (type == Boolean.class) {
+        } else if (isBooleanByFieldType(type)) {
             cell.setCellValue((Boolean) fieldValueObj);
-        } else if (type == Double.class || type == double.class || type == Integer.class || type == int.class
-                || type == Long.class || type == long.class || type == Float.class || type == float.class
-                || type == Short.class || type == short.class) {
+        } else if (isNumericByFieldType(type)) {
             cell.setCellType(Cell.CELL_TYPE_NUMERIC);
             cell.setCellValue(Double.valueOf(fieldValueObj.toString()));
         } else {

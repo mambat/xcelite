@@ -106,6 +106,7 @@ public class ColumnsExtractor {
             throw new XceliteException("AnyColumn field " + anyColumnField.getName()
                     + " should be of type Map.class or assignable from Map.class");
         }
+        anyColumnField.setAccessible(true);
 
         anyColumn = new Col(anyColumnField.getName(), anyColumnField.getName());
         anyColumn.setAnyColumn(true);

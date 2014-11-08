@@ -23,6 +23,8 @@ import org.apache.poi.ss.usermodel.Row;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.ebay.xcelite.column.ColumnsIdentifier.*;
+
 /**
  * Class description...
  *
@@ -53,19 +55,21 @@ public abstract class SheetReaderAbs<T> implements SheetReader<T> {
     }
 
     protected Object readValueFromCell(Cell cell) {
+        return readValueFromCell(cell, null);
+    }
+
+    protected Object readValueFromCell(Cell cell, Class<?> type) {
         if (cell == null) return null;
-        Object cellValue = null;
-        switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_BOOLEAN:
-                cellValue = cell.getBooleanCellValue();
-                break;
-            case Cell.CELL_TYPE_NUMERIC:
-                cellValue = cell.getNumericCellValue();
-                break;
-            default:
-                cellValue = cell.getStringCellValue();
-        }
-        return cellValue;
+
+        if (type == null) type = String.class;
+
+        if (isNumericByFieldType(type) || isNumericByCell(cell))
+            return cell.getNumericCellValue();
+
+        if (isBooleanByFieldType(type))
+            return cell.getBooleanCellValue();
+
+        return cell.getStringCellValue();
     }
 
     @Override
