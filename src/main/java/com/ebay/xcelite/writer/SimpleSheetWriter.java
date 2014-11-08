@@ -43,7 +43,7 @@ public class SimpleSheetWriter extends SheetWriterAbs<Collection<Object>> {
             for (Object column : row) {
                 Cell cell = excelRow.createCell(j);
                 if (writeHeader && i == 0) {
-                    cell.setCellStyle(CellStylesBank.get(sheet.getNativeSheet().getWorkbook()).getBoldStyle());
+                    cell.setCellStyle(CellStylesBank.get(sheet.getNativeSheet().getWorkbook()).getHeaderStyle());
                 }
                 writeToCell(cell, column, null);
                 ++j;

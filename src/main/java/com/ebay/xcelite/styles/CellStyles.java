@@ -15,17 +15,18 @@
 */
 package com.ebay.xcelite.styles;
 
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 
 public final class CellStyles {
 
     private final String DEFAULT_DATE_FORMAT = "ddd mmm dd hh:mm:ss yyy";
 
     private final Workbook wb;
-    private CellStyle boldStyle;
+    private CellStyle headerStyle;
+    private CellStyle normalStyle;
     private CellStyle dateStyle;
 
     public CellStyles(Workbook wb) {
@@ -34,25 +35,62 @@ public final class CellStyles {
     }
 
     private void initStyles() {
-        createBoldStyle();
+        createHeaderStyle();
         createDateFormatStyle();
+        createNormalStyle();
     }
 
-    private void createBoldStyle() {
-        boldStyle = wb.createCellStyle();
+    private void addAlignmentStyle(CellStyle style) {
+        style.setAlignment(CellStyle.ALIGN_CENTER);
+        style.setVerticalAlignment(CellStyle.ALIGN_CENTER);
+    }
+
+    private void addColorStyle(CellStyle style) {
+        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+    }
+
+    private void addBorderStyle(CellStyle style) {
+        style.setBorderLeft(CellStyle.BORDER_THIN);
+        style.setBorderRight(CellStyle.BORDER_THIN);
+        style.setBorderTop(CellStyle.BORDER_THIN);
+        style.setBorderBottom(CellStyle.BORDER_THIN);
+    }
+
+    private void addFontStyle(CellStyle style, short boldweight) {
         Font font = wb.createFont();
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
-        boldStyle.setFont(font);
+        font.setFontName("宋体");
+        font.setBoldweight(boldweight);
+        style.setFont(font);
+    }
+
+    private void createNormalStyle() {
+        normalStyle = wb.createCellStyle();
+        addFontStyle(normalStyle, Font.BOLDWEIGHT_NORMAL);
+        addAlignmentStyle(normalStyle);
+        addBorderStyle(normalStyle);
+    }
+
+    private void createHeaderStyle() {
+        headerStyle = wb.createCellStyle();
+        addFontStyle(headerStyle, Font.BOLDWEIGHT_BOLD);
+        addAlignmentStyle(headerStyle);
+        addBorderStyle(headerStyle);
+        addColorStyle(headerStyle);
     }
 
     private void createDateFormatStyle() {
         dateStyle = wb.createCellStyle();
         DataFormat df = wb.createDataFormat();
         dateStyle.setDataFormat(df.getFormat(DEFAULT_DATE_FORMAT));
+
+        addAlignmentStyle(dateStyle);
+        addBorderStyle(dateStyle);
+        addColorStyle(dateStyle);
     }
 
-    public CellStyle getBoldStyle() {
-        return boldStyle;
+    public CellStyle getHeaderStyle() {
+        return headerStyle;
     }
 
     public CellStyle getDateStyle() {
@@ -64,6 +102,10 @@ public final class CellStyles {
         DataFormat df = wb.createDataFormat();
         cellStyle.setDataFormat(df.getFormat(dataFormat));
         return cellStyle;
+    }
+
+    public CellStyle getNormalStyle() {
+        return normalStyle;
     }
 
     public Workbook getWorkbook() {

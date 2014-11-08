@@ -25,12 +25,10 @@ import com.ebay.xcelite.styles.CellStylesBank;
 import com.google.common.collect.Sets;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.reflections.ReflectionUtils;
+import org.apache.poi.ss.usermodel.Sheet;
 
 import java.lang.reflect.Field;
 import java.util.*;
-
-import static org.reflections.ReflectionUtils.withName;
 
 public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
 
@@ -54,6 +52,18 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
         if (writeHeader) writeHeader();
 
         writeData(data);
+
+        autoSizeColumn();
+    }
+
+    private void autoSizeColumn() {
+        Sheet nativeSheet = sheet.getNativeSheet();
+        Row row = nativeSheet.getRow(0);
+
+        for (int i = 0; i < row.getLastCellNum(); i++) {
+            nativeSheet.autoSizeColumn(i);
+        }
+
     }
 
     @SuppressWarnings("unchecked")
@@ -80,6 +90,7 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
                         fieldValueObj = field.get(t);
                     }
                     Cell cell = row.createCell(i);
+                    cell.setCellStyle(CellStylesBank.get(sheet.getNativeSheet().getWorkbook()).getNormalStyle());
                     writeToCell(cell, col, fieldValueObj);
                     i++;
                 }
@@ -135,7 +146,7 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
         try {
             Field anyColumnField = fieldsMapper.getColumnField(anyColumn.getFieldName());
             Map<String, Object> fieldValueObj = (Map<String, Object>) anyColumnField.get(t);
-            
+
             for (Map.Entry<String, Object> entry : fieldValueObj.entrySet()) {
                 Col column = new Col(entry.getKey(), anyColumnField.getName());
                 column.setType(entry.getValue() == null ? String.class : entry.getValue().getClass());
@@ -162,7 +173,7 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
             if (writeHeader) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellType(Cell.CELL_TYPE_STRING);
-                cell.setCellStyle(CellStylesBank.get(sheet.getNativeSheet().getWorkbook()).getBoldStyle());
+                cell.setCellStyle(CellStylesBank.get(sheet.getNativeSheet().getWorkbook()).getHeaderStyle());
                 cell.setCellValue(column.getName());
                 i++;
             }
