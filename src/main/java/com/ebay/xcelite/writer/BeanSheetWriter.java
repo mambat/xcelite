@@ -133,10 +133,9 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
     @SuppressWarnings("unchecked")
     private void appendAnyColumns(T t, Set<Col> columnToAdd) {
         try {
-            Set<Field> fields = ReflectionUtils.getAllFields(t.getClass(), withName(anyColumn.getFieldName()));
-            Field anyColumnField = fields.iterator().next();
-            anyColumnField.setAccessible(true);
+            Field anyColumnField = fieldsMapper.getColumnField(anyColumn.getFieldName());
             Map<String, Object> fieldValueObj = (Map<String, Object>) anyColumnField.get(t);
+            
             for (Map.Entry<String, Object> entry : fieldValueObj.entrySet()) {
                 Col column = new Col(entry.getKey(), anyColumnField.getName());
                 column.setType(entry.getValue() == null ? String.class : entry.getValue().getClass());
