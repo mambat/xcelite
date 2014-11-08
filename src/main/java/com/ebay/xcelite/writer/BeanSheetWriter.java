@@ -23,6 +23,7 @@ import com.ebay.xcelite.sheet.XceliteSheet;
 import com.ebay.xcelite.styles.CellStylesBank;
 import com.google.common.collect.Sets;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -34,7 +35,7 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
 
     private final LinkedHashSet<Col> columns;
     private final Col anyColumn;
-    private org.apache.poi.ss.usermodel.Row headerRow;
+    private Row headerRow;
     private int rowIndex = 0;
 
     public BeanSheetWriter(XceliteSheet sheet, Class<T> type) {
@@ -47,9 +48,8 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
 
     @Override
     public void write(Collection<T> data) {
-        if (writeHeader) {
-            writeHeader();
-        }
+        if (writeHeader) writeHeader();
+
         writeData(data);
     }
 
@@ -64,7 +64,7 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
             }
             addColumns(columnsToAdd, true);
             for (T t : data) {
-                org.apache.poi.ss.usermodel.Row row = sheet.getNativeSheet().createRow(rowIndex);
+                Row row = sheet.getNativeSheet().createRow(rowIndex);
                 int i = 0;
                 for (Col col : columns) {
                     Set<Field> fields = ReflectionUtils.getAllFields(t.getClass(), withName(col.getFieldName()));
