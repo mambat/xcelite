@@ -61,15 +61,24 @@ public abstract class SheetReaderAbs<T> implements SheetReader<T> {
     protected Object readValueFromCell(Cell cell, Class<?> type) {
         if (cell == null) return null;
 
-        if (type == null) type = String.class;
+        Object cellValue = null;
 
-        if (isNumericByFieldType(type) || isNumericByCell(cell))
-            return cell.getNumericCellValue();
-
-        if (isBooleanByFieldType(type))
-            return cell.getBooleanCellValue();
-
-        return cell.getStringCellValue();
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_BOOLEAN:
+                cellValue = cell.getBooleanCellValue();
+                break;
+            case Cell.CELL_TYPE_NUMERIC:
+                if (isStringByFeildType(type)) {
+                    cell.setCellType(Cell.CELL_TYPE_STRING);
+                    cellValue = cell.getStringCellValue();
+                } else {
+                    cellValue = cell.getNumericCellValue();
+                }
+                break;
+            default:
+                cellValue = cell.getStringCellValue();
+        }
+        return cellValue;
     }
 
     @Override

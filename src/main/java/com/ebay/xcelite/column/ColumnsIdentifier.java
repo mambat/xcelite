@@ -21,10 +21,8 @@ public class ColumnsIdentifier {
                type == Short.class || type == short.class;
     }
 
-    public static boolean isNumericByCell(Cell cell) {
-        return DateUtil.isCellDateFormatted(cell) ||
-               cell.getCellType() == Cell.CELL_TYPE_NUMERIC ||
-               cell.getCellType() == Cell.CELL_TYPE_FORMULA;
+    public static boolean isStringByFeildType(Class<?> type) {
+        return type == String.class;
     }
 
     public static boolean isBooleanByFieldType(Class<?> type) {
@@ -33,5 +31,9 @@ public class ColumnsIdentifier {
 
     public static boolean isDateByFieldType(Class<?> type) {
         return type == Date.class;
+    }
+
+    public static boolean isDateByCell(Cell cell) {
+        return DateUtil.isCellDateFormatted(cell);
     }
 }
