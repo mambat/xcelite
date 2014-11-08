@@ -57,11 +57,12 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
     private void writeData(Collection<T> data) {
         try {
             Set<Col> columnsToAdd = Sets.newTreeSet();
-            for (T t : data) {
-                if (anyColumn != null) {
+
+            if (anyColumn != null) {
+                for (T t : data)
                     appendAnyColumns(t, columnsToAdd);
-                }
             }
+
             addColumns(columnsToAdd, true);
             for (T t : data) {
                 Row row = sheet.getNativeSheet().createRow(rowIndex);
