@@ -60,6 +60,8 @@ public class ColumnsExtractor {
     public void extract() {
         columnFields = ReflectionUtils.getAllFields(type, withAnnotation(Column.class));
         for (Field columnField : columnFields) {
+            columnField.setAccessible(true);
+
             Column annotation = columnField.getAnnotation(Column.class);
             Col col = null;
             if (annotation.name().isEmpty()) {

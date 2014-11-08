@@ -17,6 +17,7 @@ package com.ebay.xcelite.writer;
 
 import com.ebay.xcelite.annotate.NoConverterClass;
 import com.ebay.xcelite.column.Col;
+import com.ebay.xcelite.column.ColumnFieldsMapper;
 import com.ebay.xcelite.column.ColumnsExtractor;
 import com.ebay.xcelite.converters.ColumnValueConverter;
 import com.ebay.xcelite.sheet.XceliteSheet;
@@ -34,6 +35,7 @@ import static org.reflections.ReflectionUtils.withName;
 public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
 
     private final LinkedHashSet<Col> columns;
+    private final ColumnFieldsMapper fieldsMapper;
     private final Col anyColumn;
     private Row headerRow;
     private int rowIndex = 0;
@@ -43,6 +45,7 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
         ColumnsExtractor extractor = new ColumnsExtractor(type);
         extractor.extract();
         columns = extractor.getColumns();
+        fieldsMapper = new ColumnFieldsMapper(extractor.getColumnFields());
         anyColumn = extractor.getAnyColumn();
     }
 
@@ -68,9 +71,7 @@ public class BeanSheetWriter<T> extends SheetWriterAbs<T> {
                 Row row = sheet.getNativeSheet().createRow(rowIndex);
                 int i = 0;
                 for (Col col : columns) {
-                    Set<Field> fields = ReflectionUtils.getAllFields(t.getClass(), withName(col.getFieldName()));
-                    Field field = fields.iterator().next();
-                    field.setAccessible(true);
+                    Field field = fieldsMapper.getColumnField(col.getFieldName());
                     Object fieldValueObj = null;
                     if (col.isAnyColumn()) {
                         Map<String, Object> anyColumnMap = (Map<String, Object>) field.get(t);
